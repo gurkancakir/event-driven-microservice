@@ -1,0 +1,11 @@
+version: '2'
+services:
+  axonserver:
+    image: axoniq/axonserver
+    container_name: axon-server
+    expose:
+      - 8024
+      - 8124
+    ports:
+      - 8024:8024
+      - 8124:8124
