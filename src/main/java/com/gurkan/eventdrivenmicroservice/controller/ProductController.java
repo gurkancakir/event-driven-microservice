@@ -1,7 +1,7 @@
 package com.gurkan.eventdrivenmicroservice.controller;
 
 import com.gurkan.eventdrivenmicroservice.command.AddProductCommand;
-import com.gurkan.eventdrivenmicroservice.entity.Product;
+import com.gurkan.eventdrivenmicroservice.dto.ProductDto;
 import com.gurkan.eventdrivenmicroservice.query.GetProductsQuery;
 import lombok.AllArgsConstructor;
 import org.axonframework.commandhandling.gateway.CommandGateway;
@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 @RestController
 @AllArgsConstructor
@@ -23,7 +22,7 @@ public class ProductController {
     private final QueryGateway queryGateway;
 
     @PostMapping("/addProduct")
-    public void handle(@RequestBody Product summary){
+    public void handle(@RequestBody ProductDto summary){
         AddProductCommand cmd = new AddProductCommand(
                 summary.getId(),
                 summary.getPrice(),
@@ -34,7 +33,10 @@ public class ProductController {
     }
 
     @GetMapping("/products")
-    public CompletableFuture<List<Product>> getProducts(){
-        return queryGateway.query(new GetProductsQuery(), ResponseTypes.multipleInstancesOf(Product.class));
+    public List<ProductDto> getProducts(){
+        List<ProductDto> productDtoList = queryGateway.query(new GetProductsQuery(),
+                        ResponseTypes.multipleInstancesOf(ProductDto.class))
+                .join();
+        return productDtoList;
     }
 }
